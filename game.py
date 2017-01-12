@@ -95,9 +95,13 @@ class RecordTest(unittest.TestCase):
         self.assertFalse(self.rec.is_red_win())
 
     def test_game_points(self):
-        self.rec.add_fail_mission(2)
+        self.rec.add_fail_mission()
+        self.assertEqual(self.rec.get_points(), "0:1")        
+        self.rec.add_fail_mission(1)
         self.assertEqual(self.rec.get_points(), "0:2")
-        self.rec.add_success_mission(3)
+        self.rec.add_success_mission()
+        self.assertEqual(self.rec.get_points(), "1:2")
+        self.rec.add_success_mission(2)
         self.assertEqual(self.rec.get_points(), "3:2")
 
     def test_rules_of_blue_red(self):
@@ -109,25 +113,25 @@ class PlayerTest(unittest.TestCase):
     def setUp(self):
         self.game = Game()
     
-    def all_get_point(self, game, numbers, point):
+    def all_get_right_point(self, game, numbers, point):
         for num in numbers:
             self.assertEqual(game.get_point(num), point)
 
     def test_player_get_point_when_red_win(self):
         red_win_missions = [FAIL_MISSION for x in range(3)]
         self.game.add_record(["L", "P", "S", "MG", "A"], red_win_missions)
-        self.all_get_point(self.game, [1,2,3], 0)
-        self.all_get_point(self.game, [4,5], 1)
+        self.all_get_right_point(self.game, [1,2,3], 0)
+        self.all_get_right_point(self.game, [4,5], 1)
         
         self.game.add_record(["A", "L", "S", "MG", "P", "S"], red_win_missions)
-        self.all_get_point(self.game, [1,4], 1)
-        self.all_get_point(self.game, [2,3,6,5], 0)
+        self.all_get_right_point(self.game, [1,4], 1)
+        self.all_get_right_point(self.game, [2,3,6,5], 0)
     
     def test_player_get_point_when_blue_win(self):
         blue_win_missions = [SUCCESS_MISSION for x in range(3)]
         self.game.add_record(["S", "S", "A", "MG", "L", "O", "P"], blue_win_missions)
-        self.all_get_point(self.game, [1,2,5,7], 1)
-        self.all_get_point(self.game, [3,4,6], 0)
+        self.all_get_right_point(self.game, [1,2,5,7], 1)
+        self.all_get_right_point(self.game, [3,4,6], 0)
 
 
 
