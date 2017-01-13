@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*- #
 import unittest
 
 
 RED_WIN = FAIL_MISSION = 0
 BLUE_WIN = SUCCESS_MISSION = 1
-MAX_NUMBER_OF_MISSION = 5
-RED_ROLES = ("MG", "MD", "M", "A", "O")
+#MAX_NUMBER_OF_MISSION = 5
+#RED_ROLES = ("MG", "MD", "M", "A", "O")
+BLUE_ROLES = ("L", "P", "S")
 
 class Record(object):
     def __init__(self):
@@ -15,7 +17,7 @@ class Record(object):
         self.blue_player_numbers = []
 
     def get_points(self):
-        return "{}:{}".format(self.missions.count(1), self.missions.count(0))
+        return "{}:{}".format(self.missions.count(SUCCESS_MISSION), self.missions.count(FAIL_MISSION))
 
     def add_missions(self, num, status):
         for x in range(num):
@@ -38,10 +40,10 @@ class Record(object):
 
     def divide_player_numbers(self):
         for number, role in enumerate(self.players, 1):
-            if role in RED_ROLES:
-                self.red_player_numbers.append(number)
-            else:
+            if role in BLUE_ROLES:
                 self.blue_player_numbers.append(number)
+            else:
+                self.red_player_numbers.append(number)
         
     def set_players(self, players):
         self.players = players
@@ -51,6 +53,9 @@ class Game():
     def __init__(self):
         self.rec = None
 
+    def process_record_str(self, rec_str):
+        ret = rec_str.replace(",", " ").replace("，", " ")
+        return ret.split()
 
     def add_record(self, players, missions):
         self.rec = Record()
@@ -116,6 +121,11 @@ class PlayerTest(unittest.TestCase):
     def all_get_right_point(self, game, numbers, point):
         for num in numbers:
             self.assertEqual(game.get_point(num), point)
+
+    def test_rec_str_process(self):
+        self.assertEqual(self.game.process_record_str("P S MG A L"), ["P", "S", "MG", "A", "L"])
+        self.assertEqual(self.game.process_record_str("P,   S,  MG, A,L,M,S，S"),
+                                                      ["P", "S", "MG", "A", "L", "M", "S", "S"])
 
     def test_player_get_point_when_red_win(self):
         red_win_missions = [FAIL_MISSION for x in range(3)]
