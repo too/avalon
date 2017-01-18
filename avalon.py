@@ -94,6 +94,66 @@ class Recorder(object):
                 return 0
 
 
+class Player(object):
+
+    def __init__(self, number, role, game_id):
+        self.number = number
+        self.role = role
+        self.game_id = game_id
+        self.visions = None
+
+
+
+class Game(object):
+
+    def __init__(self, count, game_id=REGULAR, show_grade=False):
+        self.roles = ROLES_FOR_NUMBER[count]
+        self.id = game_id
+        self.start = False
+        self.created = datetime.now()
+        self.show_grade = show_grade
+        self.players = None
+        self.roles_have_vision = None
+        random.shuffle(self.roles)
+        self.setup_player()
+
+    def setup_player(self):
+        self.roles_have_vision = [role for role in self.roles
+                                  if role in ROLE_VISION.keys()]
+        players = []
+        for num, role in enumerate(self.roles, 1):
+            player = Player(num, role, self.id)
+            player.visions = self.get_vision_for(num, role)
+            players.append(player)
+        self.players = players
+
+    def set_roles_to_player(self, roles):
+        self.roles = roles
+        self.setup_player()
+
+    def role_for(self, number):
+        return self.roles[number-1]
+
+    def get_player(self, number):
+        return self.players[number-1]
+
+    def get_vision_for(self, player_number, role):
+        can_see_role = ROLE_VISION.get(role, [])
+        vd = {}
+        for number, num_role in enumerate(self.roles, 1):
+            if num_role in can_see_role:
+                vd[number] = num_role
+        vd.pop(player_number, None)
+        ret = vd.keys()
+        if self.show_grade and (len(self.roles) >= 8) and role in RED_GRADE:
+            def red_sort(x, y):
+                return cmp(RED_GRADE.index(vd[x]), RED_GRADE.index(vd[y]))
+            ret.sort(cmp=red_sort)
+        else:
+            ret.sort()
+        return ret
+
+
 class GameHost(object):
     def __init__(self):
         self.games = {}
@@ -111,44 +171,3 @@ class GameHost(object):
         self.games[game_id] = game
         self.set_players(game_id, player_roles)
         return game_id
-
-    def set_players(self, game_id, player_roles):
-        self.games[game_id]["players"] = {num: role for num, role in enumerate(player_roles, 1)}
-
-    def gen_roles(self, number):
-        roles = ROLES_FOR_NUMBER[number]
-        random.shuffle(roles)
-        return roles
-
-    def get_game_players(self, game_id):
-        return self.games[game_id]["players"]
-
-    def get_role(self, player_number, game_id):
-        players = self.get_game_players(game_id)
-        return players[player_number]
-
-    def have_vision(self, player_number, game_id):
-        return self.get_role(player_number, game_id) in self.roles_have_vision
-
-    def get_vision(self, player_number, game_id):
-        players = self.get_game_players(game_id)
-        role = self.get_role(player_number, game_id)
-        can_see_role = ROLE_VISION.get(role, [])
-        vd = {}
-        for number, num_role in players.items():
-            if num_role in can_see_role:
-                vd[number] = num_role
-        vd.pop(player_number, None)
-        ret = self.get_sorted_player_numbers(vd, game_id, role)
-        return ret
-
-    def get_sorted_player_numbers(self, vd, game_id, role):
-        ret = vd.keys()
-        game = self.games[game_id]
-        if game["show_grade"] and (len(game["players"]) >= 8) and role in RED_GRADE:
-            def red_sort(x, y):
-                return cmp(RED_GRADE.index(vd[x]), RED_GRADE.index(vd[y]))
-            ret.sort(cmp=red_sort)
-        else:
-            ret.sort()
-        return ret
