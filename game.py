@@ -5,7 +5,7 @@ from datetime import datetime
 
 RED_WIN = FAIL_MISSION = 0
 BLUE_WIN = SUCCESS_MISSION = 1
-#MAX_NUMBER_OF_MISSION = 5
+# MAX_NUMBER_OF_MISSION = 5
 BLUE_ROLES = ("L", "P", "S")
 PLAYER_COUNT = (5, 6, 7, 8, 9, 10)
 ROLES_FOR_NUMBER = {5: ["MG", "A", "L", "P", "S"],
@@ -38,7 +38,8 @@ class Recorder(object):
         self.blue_player_numbers = []
 
     def get_points(self):
-        return "{}:{}".format(self.missions.count(SUCCESS_MISSION), self.missions.count(FAIL_MISSION))
+        return "{}:{}".format(self.missions.count(SUCCESS_MISSION),
+                              self.missions.count(FAIL_MISSION))
 
     def add_missions(self, num, status):
         for x in range(num):
@@ -50,7 +51,7 @@ class Recorder(object):
     def add_success_mission(self, num=1):
         self.add_missions(num, SUCCESS_MISSION)
 
-    def is_kill_merlin(self):
+    def set_kill_merlin(self):
         self.kill_merlin = True
 
     def is_red_win(self):

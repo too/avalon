@@ -18,7 +18,7 @@ class RecordTest(unittest.TestCase):
         self.assertFalse(self.rec.is_blue_win())
 
     def test_red_win_with_kill_merlin(self):
-        self.rec.is_kill_merlin()
+        self.rec.set_kill_merlin()
         self.assertTrue(self.rec.is_red_win())
         self.assertFalse(self.rec.is_blue_win())
 
