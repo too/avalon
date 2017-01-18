@@ -71,29 +71,24 @@ class Recorder(object):
         self.players = players
         self.divide_player_numbers()
 
-
-class Game(object):
-    def __init__(self):
-        self.rec = None
-
-    def process_record_str(self, rec_str):
+    @staticmethod
+    def process_record_str(rec_str):
         ret = rec_str.replace(",", " ").replace("，", " ")
         return ret.split()
 
     def add_record(self, players, missions):
-        self.rec = Recorder()
-        self.rec.set_players(players)
-        self.rec.add_fail_mission(missions.count(FAIL_MISSION))
-        self.rec.add_success_mission(missions.count(SUCCESS_MISSION))
+        self.set_players(players)
+        self.add_fail_mission(missions.count(FAIL_MISSION))
+        self.add_success_mission(missions.count(SUCCESS_MISSION))
         
-    def get_point(self, number):
-        if self.rec.is_red_win():
-            if number in self.rec.red_player_numbers:
+    def get_player_point(self, number):
+        if self.is_red_win():
+            if number in self.red_player_numbers:
                 return 1
             else:
                 return 0
-        elif self.rec.is_blue_win():
-            if number in self.rec.blue_player_numbers:
+        elif self.is_blue_win():
+            if number in self.blue_player_numbers:
                 return 1
             else:
                 return 0

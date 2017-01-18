@@ -45,32 +45,33 @@ class RecordTest(unittest.TestCase):
 
 class PlayerTest(unittest.TestCase):
     def setUp(self):
-        self.game = game.Game()
+        self.recorder = game.Recorder()
 
-    def all_get_right_point(self, game, numbers, point):
+    def all_get_right_point(self, recorder, numbers, point):
         for num in numbers:
-            self.assertEqual(game.get_point(num), point)
+            self.assertEqual(recorder.get_player_point(num), point)
 
     def test_rec_str_process(self):
-        self.assertEqual(self.game.process_record_str("P S MG A L"), ["P", "S", "MG", "A", "L"])
-        self.assertEqual(self.game.process_record_str("P,   S,  MG, A,L,M,S，S"),
-                                                      ["P", "S", "MG", "A", "L", "M", "S", "S"])
+        self.assertEqual(self.recorder.process_record_str("P S MG A L"), ["P", "S", "MG", "A", "L"])
+        self.assertEqual(self.recorder.process_record_str("P,   S,  MG, A,L,M,S，S"),
+                         ["P", "S", "MG", "A", "L", "M", "S", "S"])
 
     def test_player_get_point_when_red_win(self):
         red_win_missions = [game.FAIL_MISSION for x in range(3)]
-        self.game.add_record(["L", "P", "S", "MG", "A"], red_win_missions)
-        self.all_get_right_point(self.game, [1,2,3], 0)
-        self.all_get_right_point(self.game, [4,5], 1)
+        self.recorder.add_record(["L", "P", "S", "MG", "A"], red_win_missions)
+        self.all_get_right_point(self.recorder, [1, 2, 3], 0)
+        self.all_get_right_point(self.recorder, [4, 5], 1)
 
-        self.game.add_record(["A", "L", "S", "MG", "P", "S"], red_win_missions)
-        self.all_get_right_point(self.game, [1,4], 1)
-        self.all_get_right_point(self.game, [2,3,6,5], 0)
+        self.recorder.__init__()
+        self.recorder.add_record(["A", "L", "S", "MG", "P", "S"], red_win_missions)
+        self.all_get_right_point(self.recorder, [1, 4], 1)
+        self.all_get_right_point(self.recorder, [2, 3, 6, 5], 0)
 
     def test_player_get_point_when_blue_win(self):
         blue_win_missions = [game.SUCCESS_MISSION for x in range(3)]
-        self.game.add_record(["S", "S", "A", "MG", "L", "O", "P"], blue_win_missions)
-        self.all_get_right_point(self.game, [1,2,5,7], 1)
-        self.all_get_right_point(self.game, [3,4,6], 0)
+        self.recorder.add_record(["S", "S", "A", "MG", "L", "O", "P"], blue_win_missions)
+        self.all_get_right_point(self.recorder, [1, 2, 5, 7], 1)
+        self.all_get_right_point(self.recorder, [3, 4, 6], 0)
 
 
 class GameHostTest(unittest.TestCase):
