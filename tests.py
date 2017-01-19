@@ -153,6 +153,14 @@ class GameTest(unittest.TestCase):
                                    (5, [2, 3]),
                                    (7, [2, 8]),
                                    (8, [7, 2])))
+        game = avalon.Game(9)
+        game.set_roles_to_player(["S", "MG", "L", "S", "P", "S", "MD", "A", "S"])
+        self.visions_verify(game, ((4, []),
+                                   (2, [7, 8]),
+                                   (3, [2, 8]),
+                                   (5, [2, 3]),
+                                   (7, [2, 8]),
+                                   (8, [2, 7])))
         game = avalon.Game(10, show_grade=True)
         game.set_roles_to_player(["S", "MG", "L", "S", "O", "P", "S", "MD", "A", "S"])
         self.visions_verify(game, ((1, []),
@@ -161,3 +169,32 @@ class GameTest(unittest.TestCase):
                                    (6, [2, 3]),
                                    (8, [2, 9]),
                                    (9, [8, 2])))
+
+
+class GameHostTest(unittest.TestCase):
+
+    def setUp(self):
+        self.gh = avalon.GameHost()
+
+    def test_no_duplicate_id(self):
+        game_test_count = 10
+        game_ids = []
+        for count in range(game_test_count):
+            game_id = self.gh.new_game(5)
+            game_ids.append(game_id)
+        self.assertEqual(len(set(game_ids)), game_test_count)
+
+    def test_start_new_game(self):
+        game_id = self.gh.new_game(8)
+        game = self.gh.games[game_id]
+        self.assertEqual(len(game.roles), 8)
+        game = self.gh.restart_game(game.id, 9)
+        self.assertEqual(len(game.roles), 9)
+        old_roles = list(game.roles)
+        game = self.gh.restart_game(game.id)
+        self.assertEqual(len(game.roles), 9)
+        self.assertItemsEqual(old_roles, game.roles)
+        self.assertNotEqual(old_roles, game.roles)
+
+
+

@@ -153,21 +153,39 @@ class Game(object):
             ret.sort()
         return ret
 
+    def restart(self, new_count, show_grade=False):
+        if new_count:
+            self.roles = ROLES_FOR_NUMBER[new_count]
+        self.show_grade = show_grade
+        random.shuffle(self.roles)
+        self.setup_player()
+
 
 class GameHost(object):
     def __init__(self):
         self.games = {}
-        self.count = 0
+        # self.count = 0
         self.game_ids = []
-        self.roles_have_vision = ROLE_VISION.keys()
 
     def gen_game_id(self):
-        new_id = random.randrange(50, 10000)
+        new_id = 10
+        while new_id == 10:
+            new_id = random.randrange(50, 10000)
+            if new_id in self.game_ids:
+                new_id = 10
+        return new_id
           
-    def new_game(self, number, game_id=None, show_grade=False):
+    def new_game(self, count, game_id=None, show_grade=False):
         game_id = game_id or self.gen_game_id()
-        player_roles = self.gen_roles(number)
-        game = {"start": True, "created": datetime.now(), "show_grade": show_grade}
+        game = Game(count, game_id, show_grade)
         self.games[game_id] = game
-        self.set_players(game_id, player_roles)
+        self.game_ids.append(game.id)
         return game_id
+
+    def restart_game(self, game_id, new_count=None, show_grade=False):
+        game = self.games.get(game_id, None)
+        if game:
+            game.restart(new_count, show_grade)
+        else:
+            game = Game(new_count, game_id, show_grade)
+        return game
