@@ -25,8 +25,9 @@ for v in RED_GRADE:
 
 NEWBIE = 1
 REGULAR = 2
-BACKUP = 3
-DEFAULT_GAME_IDS = (NEWBIE, REGULAR, BACKUP)
+REGULAR_SHOW_GRADE = 3
+BACKUP = 5
+DEFAULT_GAME_IDS = (NEWBIE, REGULAR, REGULAR_SHOW_GRADE, BACKUP)
 
 
 class Recorder(object):
@@ -111,7 +112,7 @@ class Game(object):
         self.id = game_id
         self.start = False
         self.created = datetime.now()
-        self.show_grade = show_grade
+        self.show_grade = show_grade or (True if game_id == REGULAR_SHOW_GRADE else False)
         self.players = None
         self.roles_have_vision = None
         random.shuffle(self.roles)
